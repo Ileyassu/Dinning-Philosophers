@@ -12,7 +12,7 @@ void check_if_arg_num(char **av)
         j = 0;
         while(av[i][j])
         {
-            if ((!ft_isdigit(av[i][j])) || (ft_atoi(av[1]) > 200))
+            if ((!ft_isdigit(av[i][j])) || (ft_atoi(av[1]) > 200) || ft_atoi(av[i]) <= 0)
             {
                 printf("Wrong arguments\n");
                 exit(1);
