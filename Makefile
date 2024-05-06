@@ -1,7 +1,11 @@
 SRC = \
 	main.c \
 	utils/philo_init.c \
-	utils/ft_atoi.c
+	utils/ft_atoi.c \
+	utils/ft_strdup.c \
+	utils/ft_isdigit.c \
+	parsing/parse.c
+
 OBJ = $(SRC:.c=.o)
 
 NAME = philo
@@ -11,7 +15,7 @@ CFLAGS = -Wall -Werror -Wextra
 all : $(NAME)
 
 $(NAME) : $(OBJ)
-	cc $(CFLAGS) $(OBJ) -o $(NAME)
+	@cc $(CFLAGS) $(OBJ) -o $(NAME) > /dev/null
 
 fclean : clean
 		@echo full cleaning of $(NAME) ...

@@ -6,13 +6,11 @@ int	ft_strlen(const char *str)
 
 	i = 0;
 	while (str[i])
-	{
 		i++;
-	}
 	return (i);
 }
 
-void	*ft_memcpy(void *dest, const void *src, int n)
+void	*ft_memcpy(void *dest, const void *src, size_t n)
 {
 	const unsigned char	*ptr;
 	unsigned char		*d;
@@ -36,6 +34,7 @@ void	*ft_memcpy(void *dest, const void *src, int n)
 	}
 	return (NULL);
 }
+
 char	*ft_strdup(const char *str)
 {
 	int		n;

@@ -6,8 +6,8 @@ pthread_mutex_t lock;
 int main(int ac, char **av)
 {
     (void)ac;
-    int n = ft_atoi(av[1]);
-    t_philo philo[n];
+    parse(ac, av);
+    t_philo philo[ft_atoi(av[1])];
     t_utils utils;
     philo_init(&utils,philo ,av);
 }

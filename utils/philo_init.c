@@ -4,7 +4,6 @@ void *thread_test(void *arg)
 {
     t_philo *philo = (t_philo *)arg;
     (void)philo;
-    //printf("test");
     printf("id = %d\n", philo->id);
     return NULL;
 }
