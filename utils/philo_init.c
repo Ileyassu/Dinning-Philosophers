@@ -21,15 +21,22 @@ void philo_init(t_utils *utils, t_philo *philo, char **av)
     utils->num_of_time_to_eat = ft_atoi(av[5]);
     utils->death_flag = 0;
     //pthread_mutex_init(&philo->lock, NULL);
-
+    philo->r_fork = malloc(sizeof(pthread_mutex_t) * utils->philo_num);
+    philo->l_fork = malloc(sizeof(pthread_mutex_t) * utils->philo_num);
     while(i < utils->philo_num)
     {
         philo[i].utils = utils;
         philo[i].id = i + 1;
+        pthread_mutex_init(&philo[i].r_fork[i], NULL);
         pthread_create(&philo[i].thread_id, NULL, Dinning_philo, &philo[i]);
         i++;
     }
     i = 0;
+    while(i < utils->philo_num)
+    {
+        philo[i].l_fork[i] = philo[i].r_fork[(i + utils->philo_num - 1) % utils->philo_num];
+        i++;
+    }
     while(i < utils->philo_num)
     {
         philo[i].id = i + 1;
