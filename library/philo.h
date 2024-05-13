@@ -19,9 +19,11 @@ typedef struct s_utils
 
 typedef struct s_philo
 {
-    pthread_mutex_t	*r_fork;
-	pthread_mutex_t	*l_fork;
+    pthread_mutex_t	r_fork;
+	pthread_mutex_t	l_fork;
     pthread_mutex_t lock;
+    int eat;
+    int i;
     t_utils *utils;
     pthread_t thread_id;
     int id;
