@@ -1,5 +1,7 @@
 {
     "files.associations": {
-        "parse.C": "cpp"
+        "parse.C": "cpp",
+        "stdio.h": "c",
+        "pthread.h": "c"
     }
 }

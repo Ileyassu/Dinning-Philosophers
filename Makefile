@@ -4,6 +4,8 @@ SRC = \
 	utils/ft_atoi.c \
 	utils/ft_strdup.c \
 	utils/ft_isdigit.c \
+	utils/get_time.c \
+	utils/routines.c \
 	parsing/parse.c
 
 OBJ = $(SRC:.c=.o)
