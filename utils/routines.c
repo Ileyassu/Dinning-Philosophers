@@ -7,10 +7,11 @@ void philo_died (t_philo *philo)
 void philo_eating(t_philo *philo)
 {
     size_t start_time = get_time();
-    philo->last_meal = start_time;
+    pthread_mutex_lock(&philo->utils->meal);
     while(get_time() - start_time < (unsigned long)philo->utils->time_to_eat)
         usleep(100);
-    usleep(2000);
+    philo->last_meal = get_time();
+    pthread_mutex_unlock(&philo->utils->meal);
 }
 void philo_sleeping(t_philo *philo)
 {

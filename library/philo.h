@@ -28,15 +28,15 @@ typedef struct s_philo
     pthread_mutex_t lock;
     int eat;
     int i;
+    unsigned long last_meal;
     t_utils *utils;
-    int last_meal;
     pthread_t thread_id;
     int id;
 }   t_philo;
 
 int	ft_isdigit(int arg);
 int	ft_atoi(const char *pt);
-void philo_init(t_utils *utils, t_philo *philo, char **av);
+int philo_init(t_utils *utils, t_philo *philo, char **av);
 int parse(t_utils *utils, int ac, char **av);
 size_t get_time();
 void philo_died (t_philo *philo);

@@ -6,5 +6,8 @@ int main(int ac, char **av)
     t_utils utils;
     parse(&utils, ac, av);
     t_philo philo[ft_atoi(av[1]) + 1]; //creating a tab of philosophers. (should adjust it for the norms)
-    philo_init(&utils,philo ,av);
+    if (philo_init(&utils,philo ,av) == 1)
+    {
+        return (1);
+    }
 }
