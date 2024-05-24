@@ -8,6 +8,13 @@
 #include <sys/time.h>
 #include <stdlib.h>
 
+typedef enum 
+{
+    EAT,
+    SLEEP,
+    THINK,
+} state;
+
 typedef struct s_utils
 {
     long long time_start;
@@ -19,6 +26,7 @@ typedef struct s_utils
     int num_of_time_to_eat;
     pthread_mutex_t	*forks;
     pthread_mutex_t meal;
+    pthread_mutex_t printing;
 }   t_utils;
 
 typedef struct s_philo
@@ -30,6 +38,7 @@ typedef struct s_philo
     int i;
     unsigned long last_meal;
     t_utils *utils;
+    state current_state;
     pthread_t thread_id;
     int id;
 }   t_philo;

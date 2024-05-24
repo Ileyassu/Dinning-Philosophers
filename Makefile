@@ -17,7 +17,7 @@ CFLAGS = -Wall -Werror -Wextra
 all : $(NAME)
 
 $(NAME) : $(OBJ)
-	@cc $(CFLAGS) -fsanitize=thread -g $(OBJ) -o $(NAME) > /dev/null
+	@cc $(CFLAGS) $(OBJ) -o $(NAME) > /dev/null
 
 fclean : clean
 		@echo full cleaning of $(NAME) ...

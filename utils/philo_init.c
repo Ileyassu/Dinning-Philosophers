@@ -3,7 +3,38 @@
 pthread_mutex_t order_mutex = PTHREAD_MUTEX_INITIALIZER;
 int current_philo = 0;
 
-int monitoring_philo(t_philo *philo)
+int starvation()
+{
+
+}
+
+int state_printing(t_philo *philo, state code)
+{
+    pthread_mutex_lock(&philo->utils->death_flag);
+    if (code == EAT && philo->utils->death_flag != 1)
+    {
+        printf("%llu %d  is eating\n", get_time() - philo->utils->time_start, philo->id);
+        pthread_mutex_unlock(&philo->utils->death_flag);
+        return (1);
+    }
+    else if (code == SLEEP && philo->utils->death_flag != 1)
+    {
+        printf("%llu %d is sleeping\n", get_time() - philo->utils->time_start, philo->id);
+        pthread_mutex_unlock(&philo->utils->death_flag);
+        return (1);
+    }
+    else if (code == THINK && philo->utils->death_flag != 1)
+    {
+        printf("%llu %d is thinking\n", get_time() - philo->utils->time_start, philo->id);
+        pthread_mutex_unlock(&philo->utils->death_flag);
+        return (1);
+    }
+    else
+        printf("%llu %d  died\n", get_time() - philo->utils->time_start, philo->id);
+    pthread_mutex_unlock(&philo->utils->death_flag);
+    return(1);
+}
+void monitoring_philo(t_philo *philo)
 {
     int i;
     while(philo->utils->death_flag != 1)
@@ -16,42 +47,47 @@ int monitoring_philo(t_philo *philo)
             {
                 philo->utils->death_flag = 1;
                 pthread_mutex_unlock(&philo->utils->meal);
-                printf("---- philo->utils->time_start %lld ------ philo->last_meal %lu\n", philo->utils->time_start, philo->last_meal);
-                printf("%llu %d  died\n", get_time() - philo->utils->time_start, philo->id);
-                return(1);
+                return ;
             }
             pthread_mutex_unlock(&philo->utils->meal);
             i++;
         }
           usleep(100);
     }
-    return (0);
 }
 
 void *Dinning_philo(void *arg)
 {
     t_philo *philo = (t_philo *)arg;
     (void)philo;
-        if (philo->id % 2 == 0)
-        {
-            usleep(150);
-        }
+
+    if (philo->id % 2 == 0)
+    {
+        usleep(150);
+    }
+
     while(philo->utils->death_flag != 1)
     {
+        pthread_mutex_lock(&philo->utils->meal);
+        if (philo->utils->death_flag == 1) {
+            pthread_mutex_unlock(&philo->utils->meal);
+            break;
+        }
+        pthread_mutex_unlock(&philo->utils->meal);
         pthread_mutex_lock(&philo->utils->forks[philo->r_fork]);
         printf("%llu %d has taken a fork\n", get_time() - philo->utils->time_start, philo->id);
         pthread_mutex_lock(&philo->utils->forks[philo->l_fork]);
         printf("%llu %d has taken a fork\n", get_time() - philo->utils->time_start, philo->id);
         philo_eating(philo);
-        printf("%llu %d is eating\n", get_time() - philo->utils->time_start, philo->id);
-        // pthread_mutex_lock(&philo->utils->meal);
-        // philo->last_meal = get_time();
-        // pthread_mutex_unlock(&philo->utils->meal);
+        state_printing(EAT, philo);
+        philo->last_meal = get_time();
         pthread_mutex_unlock(&philo->utils->forks[philo->r_fork]);
         pthread_mutex_unlock(&philo->utils->forks[philo->l_fork]);
-        printf("%llu %d is sleeping\n", get_time() - philo->utils->time_start, philo->id);
+        state_printing(SLEEP, philo);
         philo_sleeping(philo);
         printf("%llu %d is thinking\n", get_time() - philo->utils->time_start, philo->id);
+
+        pthread_mutex_unlock(&philo->utils->meal);
     }
 
     return NULL;
@@ -68,9 +104,8 @@ int philo_init(t_utils *utils, t_philo *philo, char **av)
     utils->death_flag = 0;
     utils->num_of_time_to_eat = ft_atoi(av[5]);
     utils->forks = malloc(sizeof(pthread_mutex_t) * utils->philo_num);
-    //update philo time after eating
     pthread_mutex_init(&utils->meal, NULL);
-    // pthread_mutex_init(&philo->lock, NULL);
+    pthread_mutex_init(&utils->printing, NULL);
     while(++i < utils->philo_num)
     
     {
@@ -89,10 +124,7 @@ int philo_init(t_utils *utils, t_philo *philo, char **av)
         pthread_create(&philo[i].thread_id, NULL, Dinning_philo, &philo[i]);
         usleep(100);
     }
-    if (monitoring_philo(philo))
-    {
-        return (1);
-    }
+    monitoring_philo(philo);
     i = 0;
     while(i < utils->philo_num)
     {
