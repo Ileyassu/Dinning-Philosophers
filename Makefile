@@ -12,7 +12,7 @@ OBJ = $(SRC:.c=.o)
 
 NAME = philo
 
-CFLAGS = -Wall -Werror -Wextra
+CFLAGS = -Wall -Werror -Wextra -fsanitize=thread -g
 
 all : $(NAME)
 

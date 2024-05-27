@@ -13,7 +13,10 @@ typedef enum
     EAT,
     SLEEP,
     THINK,
-} state;
+    L_FORK,
+    R_FORK,
+    DEAD
+} state_t;
 
 typedef struct s_utils
 {
@@ -24,21 +27,23 @@ typedef struct s_utils
     int time_to_eat;
     int time_to_sleep;
     int num_of_time_to_eat;
+    pthread_mutex_t	main_lock;
     pthread_mutex_t	*forks;
+    pthread_mutex_t monitor_lock;
     pthread_mutex_t meal;
     pthread_mutex_t printing;
+    pthread_mutex_t lock;
 }   t_utils;
 
 typedef struct s_philo
 {
     int	r_fork;
     int	l_fork;
-    pthread_mutex_t lock;
     int eat;
     int i;
     unsigned long last_meal;
     t_utils *utils;
-    state current_state;
+    state_t current_state;
     pthread_t thread_id;
     int id;
 }   t_philo;
