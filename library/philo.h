@@ -27,12 +27,8 @@ typedef struct s_utils
     int time_to_eat;
     int time_to_sleep;
     int num_of_time_to_eat;
-    pthread_mutex_t	main_lock;
     pthread_mutex_t	*forks;
-    pthread_mutex_t monitor_lock;
-    pthread_mutex_t meal;
     pthread_mutex_t printing;
-    pthread_mutex_t lock;
 }   t_utils;
 
 typedef struct s_philo
@@ -42,6 +38,7 @@ typedef struct s_philo
     int eat;
     int i;
     unsigned long last_meal;
+    pthread_mutex_t mtx;
     t_utils *utils;
     state_t current_state;
     pthread_t thread_id;
@@ -49,6 +46,7 @@ typedef struct s_philo
 }   t_philo;
 
 int	ft_isdigit(int arg);
+int	ft_usleep(useconds_t time);
 int	ft_atoi(const char *pt);
 int philo_init(t_utils *utils, t_philo *philo, char **av);
 int parse(t_utils *utils, int ac, char **av);

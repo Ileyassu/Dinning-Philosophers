@@ -4,6 +4,7 @@ SRC = \
 	utils/ft_atoi.c \
 	utils/ft_strdup.c \
 	utils/ft_isdigit.c \
+	utils/ft_usleep.c \
 	utils/get_time.c \
 	utils/routines.c \
 	parsing/parse.c
