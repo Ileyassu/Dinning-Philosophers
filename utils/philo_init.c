@@ -10,6 +10,7 @@ int is_thinking(t_philo *philo)
     }
     printf("%llu %d is thinking\n", get_time() - philo->utils->time_start, philo->id);
     pthread_mutex_unlock(&philo->utils->printing);
+    ft_usleep(1);
     return 0;
 }
 
@@ -23,6 +24,7 @@ int is_sleeping(t_philo *philo)
     }
     printf("%llu %d is sleeping\n", get_time() - philo->utils->time_start, philo->id);
     pthread_mutex_unlock(&philo->utils->printing);
+    ft_usleep(philo->utils->time_to_sleep);
     return (0);
 }
 
@@ -32,9 +34,9 @@ int drop_forks(t_philo *philo)
         return 1;
     if(pthread_mutex_unlock(&philo->utils->forks[philo->l_fork]) != 0)
         return 1;
-    if(is_thinking(philo))
-        return 1;
     if(is_sleeping(philo))
+        return 1;
+    if(is_thinking(philo))
         return 1;
     return 0;
 }
@@ -46,6 +48,7 @@ int take_forks(t_philo *philo)
     pthread_mutex_lock(&philo->utils->printing);
     if(philo->utils->death_flag == 1)
     {
+        pthread_mutex_unlock(&philo->utils->forks[philo->r_fork]);
         pthread_mutex_unlock(&philo->utils->printing);
         return 1;
     }
@@ -56,6 +59,8 @@ int take_forks(t_philo *philo)
     pthread_mutex_lock(&philo->utils->printing);
     if(philo->utils->death_flag == 1)
     {
+        pthread_mutex_unlock(&philo->utils->forks[philo->r_fork]);
+        pthread_mutex_unlock(&philo->utils->forks[philo->l_fork]);
         pthread_mutex_unlock(&philo->utils->printing);
         return 1;
     }
@@ -65,12 +70,10 @@ int take_forks(t_philo *philo)
 }
 int is_eating(t_philo *philo)
 {
-    size_t start_time = get_time();
+    size_t start_time;
+
     if(take_forks(philo))
         return 1;
-    pthread_mutex_lock(&philo->mtx);
-    philo->last_meal = start_time;
-    pthread_mutex_unlock(&philo->mtx);
 
     pthread_mutex_lock(&philo->utils->printing);
     if(philo->utils->death_flag == 1)
@@ -78,11 +81,13 @@ int is_eating(t_philo *philo)
         pthread_mutex_unlock(&philo->utils->printing);
         return 1;
     }
+    start_time = get_time();
     printf("%llu %d is eating\n", get_time() - philo->utils->time_start, philo->id);
     pthread_mutex_unlock(&philo->utils->printing);
-
-    while(get_time() - start_time < (unsigned long)philo->utils->time_to_eat)
-        usleep(100);
+    pthread_mutex_lock(&philo->mtx);
+    philo->last_meal = get_time();
+    pthread_mutex_unlock(&philo->mtx);
+    ft_usleep(philo->utils->time_to_eat);
     if(drop_forks(philo))
         return 1;
     return 0;

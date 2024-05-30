@@ -1,8 +1,8 @@
 #include "../library/philo.h"
 
-int	ft_usleep(useconds_t time)
+int	ft_usleep(size_t time)
 {
-	u_int64_t	start;
+	size_t	start;
 	start = get_time();
 	while ((get_time() - start) < time)
 		usleep(time / 10);

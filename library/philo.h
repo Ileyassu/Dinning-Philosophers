@@ -46,7 +46,7 @@ typedef struct s_philo
 }   t_philo;
 
 int	ft_isdigit(int arg);
-int	ft_usleep(useconds_t time);
+int	ft_usleep(size_t time);
 int	ft_atoi(const char *pt);
 int philo_init(t_utils *utils, t_philo *philo, char **av);
 int parse(t_utils *utils, int ac, char **av);
