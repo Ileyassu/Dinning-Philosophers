@@ -43,31 +43,46 @@ int drop_forks(t_philo *philo)
 
 int take_forks(t_philo *philo)
 {
-    if (pthread_mutex_lock(&philo->utils->forks[philo->r_fork]) != 0)
+    // Ensure the locks are always acquired in a consistent order
+    int first_fork = philo->r_fork;
+    int second_fork = philo->l_fork;
+    
+    if (philo->r_fork > philo->l_fork) {
+        first_fork = philo->l_fork;
+        second_fork = philo->r_fork;
+    }
+    
+    if (pthread_mutex_lock(&philo->utils->forks[first_fork]) != 0)
         return 1;
     pthread_mutex_lock(&philo->utils->printing);
     if(philo->utils->death_flag == 1)
     {
-        pthread_mutex_unlock(&philo->utils->forks[philo->r_fork]);
+        pthread_mutex_unlock(&philo->utils->forks[first_fork]);
         pthread_mutex_unlock(&philo->utils->printing);
         return 1;
     }
     printf("%llu %d has taken a fork\n", get_time() - philo->utils->time_start, philo->id);
     pthread_mutex_unlock(&philo->utils->printing);
-    if(pthread_mutex_lock(&philo->utils->forks[philo->l_fork]) != 0)
+
+    if(pthread_mutex_lock(&philo->utils->forks[second_fork]) != 0)
+    {
+        pthread_mutex_unlock(&philo->utils->forks[first_fork]);
         return 1;
+    }
     pthread_mutex_lock(&philo->utils->printing);
     if(philo->utils->death_flag == 1)
     {
-        pthread_mutex_unlock(&philo->utils->forks[philo->r_fork]);
-        pthread_mutex_unlock(&philo->utils->forks[philo->l_fork]);
+        pthread_mutex_unlock(&philo->utils->forks[first_fork]);
+        pthread_mutex_unlock(&philo->utils->forks[second_fork]);
         pthread_mutex_unlock(&philo->utils->printing);
         return 1;
     }
     printf("%llu %d has taken a fork\n", get_time() - philo->utils->time_start, philo->id);
     pthread_mutex_unlock(&philo->utils->printing);
+
     return 0;
 }
+
 int is_eating(t_philo *philo)
 {
     size_t start_time;
