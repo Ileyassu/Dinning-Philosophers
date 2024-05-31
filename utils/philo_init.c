@@ -132,7 +132,7 @@ void *supervisor(void *arg)
             philo->utils->death_flag = 1;
             printf("%llu %d died\n", get_time() - philo->utils->time_start, philo->id);
             pthread_mutex_unlock(&philo->utils->printing);
-            exit(0);
+            return (NULL);
         }
         pthread_mutex_unlock(&philo->mtx);
         ft_usleep(10);
@@ -160,7 +160,7 @@ void *dinning_philo(void *arg)
     }
 
     // Join the supervisor thread when done
-    // pthread_join(supervisor_thread_id, NULL);
+    pthread_join(supervisor_thread_id, NULL);
     return NULL;
 }
 
