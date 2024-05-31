@@ -142,19 +142,25 @@ void *supervisor(void *arg)
 void *dinning_philo(void *arg)
 {
     t_philo *philo = (t_philo *)arg;
+    pthread_t supervisor_thread_id;
+
     if (philo->id % 2 == 0)
         usleep(100);
-    if (pthread_create(&philo->thread_id, NULL, &supervisor, (void *)philo))
-		return ((void *)1);
+
+    if (pthread_create(&supervisor_thread_id, NULL, &supervisor, (void *)philo))
+        return ((void *)1);
+
     while(1)
     {
         if (is_eating(philo))
         {
-            //add cleaning and exit
-            return NULL;
+            break;
         }
         usleep(10);
     }
+
+    // Join the supervisor thread when done
+    // pthread_join(supervisor_thread_id, NULL);
     return NULL;
 }
 
@@ -188,11 +194,17 @@ int philo_init(t_utils *utils, t_philo *philo, char **av)
         pthread_create(&philo[i].thread_id, NULL, dinning_philo, &philo[i]);
         usleep(1);
     }
-    i = 0;
-    while(i < utils->philo_num)
+    i = -1;
+    while(++i < utils->philo_num)
     {
         pthread_join(philo[i].thread_id, NULL);
-        i++;
     }
+    i = -1;
+    while(++i < utils->philo_num)
+    {
+        pthread_mutex_destroy(&utils->forks[i]);
+        pthread_mutex_destroy(&philo[i].mtx);
+    }
+    pthread_mutex_destroy(&utils->printing);
     return 0;
 }
