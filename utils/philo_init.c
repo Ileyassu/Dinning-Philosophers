@@ -202,11 +202,18 @@ int philo_init(t_utils *utils, t_philo *philo, char **av)
     utils->time_to_eat = ft_atoi(av[3]);
     utils->time_to_sleep = ft_atoi(av[4]);
     utils->death_flag = 0;
-    utils->num_of_time_to_eat = ft_atoi(av[5]);
+    if(av[5])
+    {
+        utils->num_of_time_to_eat = ft_atoi(av[5]);
+        while(++i < utils->philo_num)
+            philo[i].eat = utils->num_of_time_to_eat;
+    }
+    else 
+        utils->num_of_time_to_eat = -1;
     utils->forks = malloc(sizeof(pthread_mutex_t) * utils->philo_num);
     pthread_mutex_init(&utils->printing, NULL);
     pthread_mutex_init(&utils->finish_eating, NULL);
-
+    i = -1;
     while(++i < utils->philo_num)
     {
         philo[i].eat = utils->num_of_time_to_eat;
