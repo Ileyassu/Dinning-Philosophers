@@ -98,6 +98,14 @@ int is_eating(t_philo *philo)
         return 1;
     }
     start_time = get_time();
+
+    printf("%llu %d is eating\n", get_time() - philo->utils->time_start, philo->id);
+    pthread_mutex_unlock(&philo->utils->printing);
+    pthread_mutex_lock(&philo->mtx);
+    philo->last_meal = get_time();
+    pthread_mutex_unlock(&philo->mtx);
+    ft_usleep(philo->utils->time_to_eat);
+    pthread_mutex_lock(&philo->mtx);
     if(philo->eat > 0)
         philo->eat--;
     if (philo->eat == 0)
@@ -106,13 +114,12 @@ int is_eating(t_philo *philo)
         pthread_mutex_lock(&philo->utils->finish_eating);
         philo->utils->num_of_time_to_eat--;
         pthread_mutex_unlock(&philo->utils->finish_eating);
+        pthread_mutex_unlock(&philo->mtx);
+        pthread_mutex_unlock(&philo->utils->forks[philo->r_fork]);
+        pthread_mutex_unlock(&philo->utils->forks[philo->l_fork]);
+        return 1;
     }
-    printf("%llu %d is eating\n", get_time() - philo->utils->time_start, philo->id);
-    pthread_mutex_unlock(&philo->utils->printing);
-    pthread_mutex_lock(&philo->mtx);
-    philo->last_meal = get_time();
     pthread_mutex_unlock(&philo->mtx);
-    ft_usleep(philo->utils->time_to_eat);
     if(drop_forks(philo))
         return 1;
     return 0;
@@ -137,6 +144,11 @@ void *supervisor(void *arg)
         }
         pthread_mutex_unlock(&philo->utils->printing);
         pthread_mutex_lock(&philo->mtx);
+        if (philo->eat == 0)
+        {
+            pthread_mutex_unlock(&philo->mtx);
+            return NULL;
+        }
         if(get_time() - philo->last_meal >= (unsigned long)philo->utils->time_to_die)
         {
             pthread_mutex_unlock(&philo->mtx);
