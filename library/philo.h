@@ -29,6 +29,7 @@ typedef struct s_utils
     int num_of_time_to_eat;
     pthread_mutex_t	*forks;
     pthread_mutex_t printing;
+    pthread_mutex_t finish_eating;
 }   t_utils;
 
 typedef struct s_philo
@@ -38,6 +39,7 @@ typedef struct s_philo
     int eat;
     int i;
     unsigned long last_meal;
+    int has_finished_eating;
     pthread_mutex_t mtx;
     t_utils *utils;
     state_t current_state;

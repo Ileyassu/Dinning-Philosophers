@@ -87,9 +87,10 @@ int is_eating(t_philo *philo)
 {
     size_t start_time;
 
+    if(philo->has_finished_eating == 1 || philo->eat == 0)
+        return 1;
     if(take_forks(philo))
         return 1;
-
     pthread_mutex_lock(&philo->utils->printing);
     if(philo->utils->death_flag == 1)
     {
@@ -97,6 +98,15 @@ int is_eating(t_philo *philo)
         return 1;
     }
     start_time = get_time();
+    if(philo->eat > 0)
+        philo->eat--;
+    if (philo->eat == 0)
+    {
+        philo->has_finished_eating = 1;
+        pthread_mutex_lock(&philo->utils->finish_eating);
+        philo->utils->num_of_time_to_eat--;
+        pthread_mutex_unlock(&philo->utils->finish_eating);
+    }
     printf("%llu %d is eating\n", get_time() - philo->utils->time_start, philo->id);
     pthread_mutex_unlock(&philo->utils->printing);
     pthread_mutex_lock(&philo->mtx);
@@ -112,6 +122,13 @@ void *supervisor(void *arg)
     t_philo *philo = (t_philo *)arg;
     while(1)
     {
+        pthread_mutex_lock(&philo->utils->finish_eating);
+        if(philo->utils->num_of_time_to_eat == 0)
+        {
+            pthread_mutex_unlock(&philo->utils->finish_eating);
+            return NULL;
+        }
+        pthread_mutex_unlock(&philo->utils->finish_eating);
         pthread_mutex_lock(&philo->utils->printing);
         if(philo->utils->death_flag == 1)
         {
@@ -176,10 +193,13 @@ int philo_init(t_utils *utils, t_philo *philo, char **av)
     utils->num_of_time_to_eat = ft_atoi(av[5]);
     utils->forks = malloc(sizeof(pthread_mutex_t) * utils->philo_num);
     pthread_mutex_init(&utils->printing, NULL);
+    pthread_mutex_init(&utils->finish_eating, NULL);
+
     while(++i < utils->philo_num)
     {
         philo[i].eat = utils->num_of_time_to_eat;
         philo[i].utils = utils;
+        philo[i].has_finished_eating = 0;
         philo[i].id = i + 1;
         philo[i].r_fork = i;
         philo[i].l_fork = (i + 1) % utils->philo_num;
