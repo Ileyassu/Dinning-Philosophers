@@ -52,11 +52,8 @@ void	philo_finished_eating(t_philo *philo)
 
 int	is_eating(t_philo *philo)
 {
-	//size_t	start_time;
-
 	if (eating_checkers(philo))
 		return (1);
-	//start_time = get_time();
 	printf("%llu %d is eating\n", get_time() - philo->utils->time_start,
 		philo->id);
 	pthread_mutex_unlock(&philo->utils->printing);

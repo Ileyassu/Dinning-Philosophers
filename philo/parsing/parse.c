@@ -12,9 +12,9 @@
 
 #include "../library/philo.h"
 
-int check_last_param(char *num)
+int	check_last_param(char *num)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	while (num[i])
